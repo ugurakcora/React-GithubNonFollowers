@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* .avatarStyle {
+  border-radius: 50%;
+  width: 50px;
+  margin-right: 10px;
+} */
+
+/* .cardContainerStyle{
+  display: flex;
+  flex-wrap: wrap;
+} */
+
+/* .cardStyle{
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+} */
