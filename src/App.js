@@ -6,6 +6,8 @@ import axios from "axios";
 const App = () => {
   const [githubUsername, setGithubUsername] = useState("");
   const [nonFollowers, setNonFollowers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9; // Her sayfada gösterilecek öğe sayısı
 
   const handleInputChange = (value) => {
     setGithubUsername(value);
@@ -13,6 +15,7 @@ const App = () => {
 
   const handleButtonClick = async () => {
     try {
+      // GitHub API'den takipçi ve takip edilenleri çek
       const followersResponse = await axios.get(
         `https://api.github.com/users/${githubUsername}/followers`
       );
@@ -29,6 +32,9 @@ const App = () => {
       const nonFollowersList = following.filter(
         (user) => !followers.includes(user)
       );
+
+      // İlk sayfayı göster
+      setCurrentPage(1);
       setNonFollowers(nonFollowersList);
     } catch (error) {
       console.error("Error fetching GitHub data:", error);
@@ -36,7 +42,11 @@ const App = () => {
   };
 
   const renderNonFollowers = () => {
-    return nonFollowers.map((follower, index) => (
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = nonFollowers.slice(indexOfFirstItem, indexOfLastItem);
+
+    return currentItems.map((follower, index) => (
       <div
         key={index}
         className="card flex flex-col items-center justify-center p-20 border border-gray-300 rounded mb-10 cursor-pointer w-3/4 h-[100px] xl:w-[400px] xl:h-[200px]"
@@ -44,12 +54,13 @@ const App = () => {
         <img
           src={`https://avatars.githubusercontent.com/${follower}`}
           alt={`${follower} avatar`}
-          className="rounded-full w-[50%] mr-[10px]"
+          className="rounded-full w-20 mb-4"
         />
         <a
           href={`https://github.com/${follower}`}
           target="_blank"
           rel="noopener noreferrer"
+          className="text-blue-500 hover:underline"
         >
           {follower}
         </a>
@@ -57,9 +68,14 @@ const App = () => {
     ));
   };
 
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(nonFollowers.length / itemsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
   return (
     <div className="container mx-auto flex flex-col items-center justify-center mt-10">
-      <div className="flex gap-2">
+      <div className="flex gap-4">
         <Input value={githubUsername} onChange={handleInputChange} />
         <Button onClick={handleButtonClick} />
       </div>
@@ -82,6 +98,21 @@ const App = () => {
                       {followerGroup}
                     </div>
                   ))}
+              </div>
+              <div className="pagination mt-4 flex justify-center items-center cursor-pointer">
+                {pageNumbers.map((number) => (
+                  <button
+                    key={number}
+                    onClick={() => setCurrentPage(number)}
+                    className={`${
+                      currentPage === number
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-300"
+                    } px-3 py-2 mx-1 rounded-full`}
+                  >
+                    {number}
+                  </button>
+                ))}
               </div>
             </div>
           ) : (
