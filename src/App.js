@@ -39,7 +39,7 @@ const App = () => {
     return nonFollowers.map((follower, index) => (
       <div
         key={index}
-        className="card flex flex-col items-center justify-center w-[400px] h-[200px] p-20 border border-gray-300 rounded mb-10 cursor-pointer"
+        className="card flex flex-col items-center justify-center p-20 border border-gray-300 rounded mb-10 cursor-pointer w-3/4 h-[100px] xl:w-[400px] xl:h-[200px]"
       >
         <img
           src={`https://avatars.githubusercontent.com/${follower}`}
@@ -58,20 +58,29 @@ const App = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center mt-10">
-      <Input value={githubUsername} onChange={handleInputChange} />
-      <Button onClick={handleButtonClick} />
+    <div className="container mx-auto flex flex-col items-center justify-center mt-10">
+      <div className="flex gap-2">
+        <Input value={githubUsername} onChange={handleInputChange} />
+        <Button onClick={handleButtonClick} />
+      </div>
 
-      <div>
-        <h2>Non-Followers for {githubUsername}:</h2>
+      <div className="flex items-center justify-center flex-col">
+        <h2 className="my-6">Non-Followers for {githubUsername}:</h2>
         <div className="card-container flex items-center justify-center flex-wrap">
           {nonFollowers.length > 0 ? (
-            <div className="m-auto">
-              {nonFollowers.length} non-followers found.
+            <div className="container mx-auto">
+              <h3 className="text-center my-6">
+                {nonFollowers.length} non-followers found.
+              </h3>
               <div className="flex flex-wrap items-center justify-center gap-2">
                 {nonFollowers.length > 0 &&
                   renderNonFollowers().map((followerGroup, index) => (
-                    <div key={index}>{followerGroup}</div>
+                    <div
+                      key={index}
+                      className="flex items-center justify-center"
+                    >
+                      {followerGroup}
+                    </div>
                   ))}
               </div>
             </div>
