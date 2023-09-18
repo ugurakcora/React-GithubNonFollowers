@@ -1,13 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Input from "./components/Input";
 import Button from "./components/Button";
 import axios from "axios";
+import { FaSun, FaMoon } from "react-icons/fa";
 
 const App = () => {
   const [githubUsername, setGithubUsername] = useState("");
   const [nonFollowers, setNonFollowers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9; // Her sayfada gösterilecek öğe sayısı
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const itemsPerPage = 9;
+
+  useEffect(() => {
+    const savedDarkMode = localStorage.getItem("darkMode");
+    if (savedDarkMode !== null) {
+      setIsDarkMode(JSON.parse(savedDarkMode));
+    }
+    if (JSON.parse(savedDarkMode)) {
+      document.body.classList.add("bg-black");
+    } else {
+      document.body.classList.remove("bg-black");
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    localStorage.setItem("darkMode", JSON.stringify(newMode));
+    document.body.classList.toggle("bg-black", newMode);
+  };
 
   const handleInputChange = (value) => {
     setGithubUsername(value);
@@ -15,7 +36,6 @@ const App = () => {
 
   const handleButtonClick = async () => {
     try {
-      // GitHub API'den takipçi ve takip edilenleri çek
       const followersResponse = await axios.get(
         `https://api.github.com/users/${githubUsername}/followers`
       );
@@ -33,7 +53,6 @@ const App = () => {
         (user) => !followers.includes(user)
       );
 
-      // İlk sayfayı göster
       setCurrentPage(1);
       setNonFollowers(nonFollowersList);
     } catch (error) {
@@ -49,7 +68,7 @@ const App = () => {
     return currentItems.map((follower, index) => (
       <div
         key={index}
-        className="card flex flex-col items-center justify-center p-20 border border-gray-300 rounded mb-10 cursor-pointer  h-[100px] xl:w-[400px] xl:h-[200px]"
+        className="card flex flex-col items-center justify-center p-20 border border-gray-300 rounded mb-10 cursor-pointer h-[100px] xl:w-[400px] xl:h-[200px]"
       >
         <img
           src={`https://avatars.githubusercontent.com/${follower}`}
@@ -74,53 +93,65 @@ const App = () => {
   }
 
   return (
-    <div className="container mx-auto flex flex-col items-center justify-center mt-10">
-      <div className="flex justify-center items-center gap-4">
-        <Input value={githubUsername} onChange={handleInputChange} />
-        <Button onClick={handleButtonClick} />
-      </div>
+    <>
+      <div className={`container mx-auto ${isDarkMode ? "dark" : ""}`}>
+        <div className="flex justify-center items-center gap-4 mt-4">
+          <Input value={githubUsername} onChange={handleInputChange} />
+          <Button onClick={handleButtonClick} />
+        </div>
 
-      <div className="flex items-center justify-center flex-col">
-        <h2 className="my-6">Non-Followers for {githubUsername}:</h2>
-        <div className="card-container flex items-center justify-center flex-wrap">
-          {nonFollowers.length > 0 ? (
-            <div className="container mx-auto">
-              <h3 className="text-center my-6">
-                {nonFollowers.length} non-followers found.
-              </h3>
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                {nonFollowers.length > 0 &&
-                  renderNonFollowers().map((followerGroup, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-center"
+        <div
+          className={`flex items-center justify-center flex-col ${
+            isDarkMode ? "text-white bg-black" : "text-black bg-white"
+          }`}
+        >
+          <h2 className="my-6">Non-Followers for {githubUsername}:</h2>
+          <div className="card-container flex items-center justify-center flex-wrap">
+            {nonFollowers.length > 0 ? (
+              <div className="container mx-auto">
+                <h3 className="text-center my-6">
+                  {nonFollowers.length} non-followers found.
+                </h3>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  {nonFollowers.length > 0 &&
+                    renderNonFollowers().map((followerGroup, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-center"
+                      >
+                        {followerGroup}
+                      </div>
+                    ))}
+                </div>
+                <div className="pagination my-4 flex justify-center items-center cursor-pointer">
+                  {pageNumbers.map((number) => (
+                    <button
+                      key={number}
+                      onClick={() => setCurrentPage(number)}
+                      className={`${
+                        currentPage === number
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-300"
+                      } px-4 py-2 mx-1 text-sm rounded`}
                     >
-                      {followerGroup}
-                    </div>
+                      {number}
+                    </button>
                   ))}
+                </div>
               </div>
-              <div className="pagination my-4 flex justify-center items-center cursor-pointer">
-                {pageNumbers.map((number) => (
-                  <button
-                    key={number}
-                    onClick={() => setCurrentPage(number)}
-                    className={`${
-                      currentPage === number
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-300"
-                    } px-4 py-2 mx-1 text-sm rounded`}
-                  >
-                    {number}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div>No non-followers found.</div>
-          )}
+            ) : (
+              <div>No non-followers found.</div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+      <div
+        className="mode-toggle cursor-pointer border rounded p-2 fixed bottom-4 right-4"
+        onClick={toggleDarkMode}
+      >
+        {isDarkMode ? <FaSun className="text-white" /> : <FaMoon />}
+      </div>
+    </>
   );
 };
 
