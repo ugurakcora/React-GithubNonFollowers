@@ -49,7 +49,7 @@ const App = () => {
     return currentItems.map((follower, index) => (
       <div
         key={index}
-        className="card flex flex-col items-center justify-center p-20 border border-gray-300 rounded mb-10 cursor-pointer w-3/4 h-[100px] xl:w-[400px] xl:h-[200px]"
+        className="card flex flex-col items-center justify-center p-20 border border-gray-300 rounded mb-10 cursor-pointer  h-[100px] xl:w-[400px] xl:h-[200px]"
       >
         <img
           src={`https://avatars.githubusercontent.com/${follower}`}
@@ -75,7 +75,7 @@ const App = () => {
 
   return (
     <div className="container mx-auto flex flex-col items-center justify-center mt-10">
-      <div className="flex gap-4">
+      <div className="flex justify-center items-center gap-4">
         <Input value={githubUsername} onChange={handleInputChange} />
         <Button onClick={handleButtonClick} />
       </div>
@@ -99,7 +99,7 @@ const App = () => {
                     </div>
                   ))}
               </div>
-              <div className="pagination mt-4 flex justify-center items-center cursor-pointer">
+              <div className="pagination my-4 flex justify-center items-center cursor-pointer">
                 {pageNumbers.map((number) => (
                   <button
                     key={number}
@@ -108,7 +108,7 @@ const App = () => {
                       currentPage === number
                         ? "bg-blue-500 text-white"
                         : "bg-gray-300"
-                    } px-3 py-2 mx-1 rounded-full`}
+                    } px-4 py-2 mx-1 text-sm rounded`}
                   >
                     {number}
                   </button>
